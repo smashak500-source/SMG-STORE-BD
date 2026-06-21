@@ -1,0 +1,2530 @@
+<!DOCTYPE html>       
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMG STORE BD</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --card-bg: #ffffff;
+      --gold-color: #f59e0b;
+      --danger-color: #ef4444;
+      --transition-speed: 0.3s ease;
+    }
+
+    body.dark-mode {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --card-bg: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', 'Poppins', sans-serif;
+    }
+
+    /* Keep footer strictly at bottom & prevent side scrolling layout break */
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    #app-viewport {
+      flex: 1 0 auto;
+      padding-bottom: 70px; /* space for mobile sticky nav */
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Preloader Styles */
+    #global-preloader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--bg-primary);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s ease;
+    }
+    .preloader-title {
+      font-size: 2.2rem !important;
+      font-weight: 800;
+      margin-bottom: 2px;
+      color: var(--accent-color);
+      text-align: center;
+    }
+    .preloader-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .preloader-spinner {
+      border: 4px solid var(--border-color);
+      border-top: 4px solid var(--accent-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Navbar styling optimized to prevent mobile shrinking and wrapping */
+    .navbar {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 70px;
+      width: 100%;
+      transition: background-color var(--transition-speed);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      padding: 0 15px;
+      gap: 10px;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .menu-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-btn {
+      position: relative;
+      font-size: 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: var(--accent-color);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.72rem;
+      padding: 2px 5px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    /* Left Sidebar Menu (Drawer) */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 2000;
+      display: none;
+    }
+    .sidebar-overlay.show {
+      display: block;
+    }
+    .sidebar-drawer {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background-color: var(--bg-secondary);
+      z-index: 2001;
+      transition: left var(--transition-speed);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-drawer.open {
+      left: 0;
+    }
+    .drawer-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drawer-logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drawer-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .drawer-menu {
+      padding: 15px 0;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: background 0.2s, color 0.2s;
+    }
+    .drawer-item:hover {
+      background-color: rgba(16, 185, 129, 0.08);
+      color: var(--accent-color);
+    }
+    .drawer-category-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    .drawer-categories-sub {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 5px 0;
+    }
+    .drawer-categories-sub.open {
+      display: block;
+    }
+    .drawer-sub-item {
+      padding: 8px 20px 8px 50px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: block;
+      transition: color 0.2s;
+    }
+
+    /* Search Section */
+    .search-wrapper {
+      max-width: 600px;
+      margin: 15px auto;
+      padding: 0 15px;
+      position: relative;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 20px 12px 45px;
+      border-radius: 30px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+
+    /* Premium Banner Slider */
+    .slider-container {
+      max-width: 1200px;
+      margin: 10px auto 20px auto;
+      padding: 0 15px;
+      width: 100%;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      background-color: #000;
+      cursor: pointer;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .slide.active {
+      opacity: 1;
+      position: relative;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .slider-caption {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 15px;
+    }
+
+    /* Limited Time Offers Layout */
+    .offers-section {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 15px;
+      width: 100%;
+    }
+    
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .offers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+    }
+    
+    .offer-timer-top {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--gold-color);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-color);
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Categories Grid */
+    .category-section {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 15px;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+      font-weight: 700;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 3px;
+      background-color: var(--accent-color);
+      bottom: -4px;
+      left: 0;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .category-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .category-card {
+        padding: 8px 4px !important;
+      }
+      .category-title-text {
+        font-size: 0.65rem !important;
+      }
+    }
+
+    .category-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-speed);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .category-card:hover, .category-card.active {
+      transform: translateY(-2px);
+      border-color: var(--accent-color);
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+
+    .category-img-wrap {
+      width: 45px;
+      height: 45px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .category-title-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Products Showcase */
+    .product-showcase {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 15px;
+      width: 100%;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+    }
+
+    .product-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: transform var(--transition-speed);
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .product-tag {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 3px 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      border-radius: 10px;
+      z-index: 10;
+    }
+
+    .product-tag.discount {
+      background-color: var(--gold-color);
+      color: #000;
+    }
+
+    .product-img-wrapper {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 8px;
+    }
+
+    .product-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .product-info {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 2.4em;
+      line-height: 1.2;
+    }
+
+    .price-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .current-price {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    .old-price {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-decoration: line-through;
+    }
+
+    /* Size Selector & Buttons */
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      transition: background var(--transition-speed);
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      background: transparent;
+    }
+
+    /* Add To Cart explicitly styled green */
+    .btn-add-to-cart {
+      background-color: var(--accent-color) !important;
+      color: #ffffff !important;
+    }
+    .btn-add-to-cart:hover {
+      background-color: var(--accent-hover) !important;
+    }
+
+    /* Product Detail Redesign (Mobile Friendly & Full Screen Image) */
+    .product-details-container {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .details-gallery {
+      width: 100%;
+      position: relative;
+    }
+
+    .main-image-wrap {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background-color: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .thumbnail-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 15px;
+    }
+
+    .gallery-thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      background-color: var(--bg-secondary);
+      transition: border-color var(--transition-speed);
+      flex-shrink: 0;
+    }
+
+    .gallery-thumb.active {
+      border-color: var(--accent-color);
+    }
+
+    .details-meta {
+      padding: 15px;
+    }
+
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .qty-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      min-width: 25px;
+      text-align: center;
+    }
+
+    .size-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .size-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .size-btn.active {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      color: white;
+    }
+
+    .product-description-box {
+      margin-top: 20px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 15px;
+    }
+
+    .product-description-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .product-description-text {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    /* Sticky Bottom Bar for Mobile */
+    .mobile-sticky-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .mobile-sticky-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .mobile-sticky-nav a.active, .mobile-sticky-nav a:hover {
+      color: var(--accent-color);
+    }
+
+    .mobile-sticky-nav i {
+      font-size: 1.15rem;
+      margin-bottom: 3px;
+    }
+
+    /* Sticky Action Bar on Detail Mobile */
+    .sticky-detail-action {
+      position: fixed;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 15px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: var(--accent-color);
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: white;
+      z-index: 3000;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .toast.hidden, .hidden {
+      display: none !important;
+    }
+
+    /* General Viewports Layout */
+    .cart-viewport, .checkout-viewport {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Copy Button */
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--accent-color);
+      border: 1px solid var(--accent-color);
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    /* Footer (Minimal Design Always at the Absolute Bottom) */
+    .footer {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border-color);
+      padding: 20px 0;
+      text-align: center;
+      background-color: var(--bg-secondary);
+    }
+    .footer p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-sticky-nav {
+        display: flex;
+      }
+      .sticky-detail-action {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader Screen (Logo added directly to ensure zero loading lag) -->
+  <div id="global-preloader">
+    <div id="preloader-logo-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
+      <div id="preloader-logo-img-holder">
+        <img src="https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png" alt="Logo" style="max-height: 90px; border-radius: 8px; object-fit: contain; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px;">
+      </div>
+      <div class="preloader-title">SMG STORE BD</div>
+      <div class="preloader-subtitle">বিশ্বাসের সাথে কেনাকাটা</div>
+    </div>
+    <div class="preloader-spinner"></div>
+  </div>
+
+  <!-- Left Sidebar Menu (Drawer) (Logo added directly for instant render) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="sidebar-drawer" id="sidebar-drawer">
+    <div class="drawer-header">
+      <span class="drawer-logo" id="drawer-logo-holder">
+        <img src="https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png" style="max-height: 30px; border-radius: 4px; object-fit: contain; margin-right: 8px;">
+        <span>SMG STORE BD</span>
+      </span>
+      <button class="drawer-close" id="drawer-close-btn">&times;</button>
+    </div>
+    <div class="drawer-menu">
+      <a href="#/" class="drawer-item"><i class="fa-solid fa-house"></i> Home</a>
+      <div class="drawer-category-trigger" id="drawer-cat-trigger">
+        <span><i class="fa-solid fa-layer-group"></i> Categories</span>
+        <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;"></i>
+      </div>
+      <div class="drawer-categories-sub" id="drawer-categories-sub"></div>
+      <a href="#/about" class="drawer-item"><i class="fa-solid fa-info-circle"></i> আমাদের সম্পর্কে</a>
+      <a href="#/privacy" class="drawer-item"><i class="fa-solid fa-user-shield"></i> প্রাইভেসি পলিসি</a>
+      <a href="#/chat" class="drawer-item"><i class="fa-solid fa-comments"></i> চ্যাট সেকশন</a>
+      <a href="#/track" class="drawer-item"><i class="fa-solid fa-truck"></i> Track Order</a>
+      <a href="#/profile" class="drawer-item" id="drawer-profile-link"><i class="fa-solid fa-user"></i> প্রোফাইল</a>
+      <div id="drawer-auth-box" style="margin-top: 20px; padding: 0 15px;"></div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar (Logo added directly for zero delay display) -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+        <button class="menu-toggle-btn" id="menu-toggle-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <a href="#/" class="logo" id="main-logo-anchor">
+          <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+            <img src="https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png" alt="Logo" style="max-height: 40px; border-radius: 4px; object-fit: contain; flex-shrink: 0;">
+            <span style="font-weight: 700; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">SMG STORE BD</span>
+          </div>
+        </a>
+      </div>
+      <div class="nav-icons">
+        <button class="theme-toggle-btn" id="search-toggle-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="theme-toggle-btn" id="theme-toggle-btn">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+        <a href="#/cart" class="cart-btn">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-count" id="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Toggleable Search Box -->
+  <div class="search-wrapper hidden" id="navbar-search-wrapper">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input type="text" id="live-search-input" class="search-input" placeholder="জার্সির নাম বা প্রোডাক্ট কোড দিয়ে সার্চ করুন...">
+  </div>
+
+  <!-- Dynamic Views (Viewport gets flex-grown) -->
+  <main id="app-viewport"></main>
+
+  <!-- Sticky Bottom Navigation -->
+  <div class="mobile-sticky-nav">
+    <a href="#/"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="#/cart"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></a>
+    <a href="#/chat"><i class="fa-solid fa-comments"></i><span>Chat</span></a>
+    <a href="#/track"><i class="fa-solid fa-truck"></i><span>Track</span></a>
+    <a href="#/profile" id="mobile-profile-tab"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Always at Bottom Footer -->
+  <footer class="footer">
+    <p>© SMG STORE BD. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    function copyGlobalText(text, message = "কপি করা হয়েছে!") {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        if(toast) {
+          toast.innerText = message;
+          toast.classList.remove("hidden");
+          setTimeout(() => { toast.classList.add("hidden"); }, 3000);
+        }
+      });
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDalMaOcy18yfnzWEiufklwpaRPuaeeuCk",
+      authDomain: "smg-store-bd.firebaseapp.com",
+      databaseURL: "https://smg-store-bd-default-rtdb.firebaseio.com",
+      projectId: "smg-store-bd",
+      storageBucket: "smg-store-bd.firebasestorage.app",
+      messagingSenderId: "1082082554712",
+      appId: "1:1082082554712:web:d7a6e07441a8c00b74eb2d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let cart = JSON.parse(localStorage.getItem('smg_cart')) || [];
+    
+    // In-Memory Local Cache variables for lightning fast navigation and back navigation
+    let allLoadedProducts = [];
+    let loadedCategories = [];
+    let loadedSliders = [];
+    let loadedOffers = [];
+
+    let searchFilterQuery = "";
+    let currentUserProfile = null;
+    let selectedCategoryFilter = "all";
+    
+    // Default config values with required Postimg logo as fallback
+    let appSettings = {
+      appName: "SMG STORE BD",
+      logoUrl: "https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png",
+      aboutUs: "আমরা প্রিমিয়াম কোয়ালিটির জার্সি সরবরাহকারী প্রতিষ্ঠান।",
+      privacyPolicy: "আপনার গোপনীয়তা আমাদের কাছে অত্যন্ত গুরুত্বপূর্ণ।",
+      bkash: "Not set", nagad: "Not set", upay: "Not set",
+      insideDhakaCharge: 80, subDhakaCharge: 100, outsideDhakaCharge: 120,
+      whatsapp: "8801700000000", phone: "01700000000", fbPage: "https://facebook.com",
+      codEnabled: true
+    };
+
+    function hidePreloader() {
+      const preloader = document.getElementById("global-preloader");
+      if (preloader) {
+        preloader.style.opacity = "0";
+        setTimeout(() => preloader.classList.add("hidden"), 500);
+      }
+    }
+
+    // Helper function to return beautiful status badges
+    function getStatusBadge(status) {
+      const s = (status || "").toLowerCase();
+      if (s === 'pending') {
+        return `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #f59e0b;">পেন্ডিং (Pending)</span>`;
+      } else if (s === 'confirmed' || s === 'approved') {
+        return `<span style="background: rgba(59, 130, 246, 0.15); color: #2563eb; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #3b82f6;">কনফার্ম (Confirmed)</span>`;
+      } else if (s === 'shipping' || s === 'shipped') {
+        return `<span style="background: rgba(6, 182, 212, 0.15); color: #0891b2; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #06b6d4;">শিপিং (Shipping)</span>`;
+      } else if (s === 'completed' || s === 'complete') {
+        return `<span style="background: rgba(16, 185, 129, 0.15); color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #10b981;">কমপ্লিট (Completed)</span>`;
+      } else if (s === 'cancelled' || s === 'cancel') {
+        return `<span style="background: rgba(239, 68, 68, 0.15); color: #dc2626; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #ef4444;">বাতিল (Cancelled)</span>`;
+      }
+      return `<span style="background: rgba(100, 116, 139, 0.15); color: #475569; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #64748b;">${status}</span>`;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const sidebarOverlay = document.getElementById("sidebar-overlay");
+      const sidebarDrawer = document.getElementById("sidebar-drawer");
+      const menuToggleBtn = document.getElementById("menu-toggle-btn");
+      const drawerCloseBtn = document.getElementById("drawer-close-btn");
+      const drawerCatTrigger = document.getElementById("drawer-cat-trigger");
+      const drawerCatSub = document.getElementById("drawer-categories-sub");
+      const searchToggleBtn = document.getElementById("search-toggle-btn");
+      const navbarSearchWrapper = document.getElementById("navbar-search-wrapper");
+
+      const openDrawer = () => {
+        sidebarDrawer.classList.add("open");
+        sidebarOverlay.classList.add("show");
+      };
+
+      const closeDrawer = () => {
+        sidebarDrawer.classList.remove("open");
+        sidebarOverlay.classList.remove("show");
+      };
+
+      if (menuToggleBtn) menuToggleBtn.onclick = openDrawer;
+      if (drawerCloseBtn) drawerCloseBtn.onclick = closeDrawer;
+      if (sidebarOverlay) sidebarOverlay.onclick = closeDrawer;
+
+      // Close drawer immediately upon clicking navigation choices
+      document.querySelectorAll('.drawer-menu a').forEach(link => {
+        link.addEventListener('click', closeDrawer);
+      });
+
+      if (drawerCatTrigger && drawerCatSub) {
+        drawerCatTrigger.onclick = () => {
+          drawerCatSub.classList.toggle("open");
+        };
+      }
+
+      // Search bar Toggle Icon Click handler
+      if (searchToggleBtn && navbarSearchWrapper) {
+        searchToggleBtn.onclick = () => {
+          navbarSearchWrapper.classList.toggle("hidden");
+          const liveSearchInput = document.getElementById("live-search-input");
+          if (!navbarSearchWrapper.classList.contains("hidden") && liveSearchInput) {
+            liveSearchInput.focus();
+          }
+        };
+      }
+
+      window.closeSidebarDrawer = closeDrawer;
+
+      // Fix navigation category locking bug: Route properly and apply filter
+      window.navigateAndFilterCategory = (catId) => {
+        selectedCategoryFilter = catId;
+        closeDrawer();
+        if (window.location.hash !== "#/" && window.location.hash !== "") {
+          window.location.hash = "#/";
+        } else {
+          const cardHtmlId = catId === 'all' ? 'cat-card-all' : `cat-card-${catId}`;
+          filterCategoryProducts(catId, cardHtmlId);
+        }
+      };
+
+      const cachedTheme = localStorage.getItem('theme-mode');
+      if (cachedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById("theme-icon").className = "fa-solid fa-sun";
+      }
+
+      document.getElementById("theme-toggle-btn").onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        const activeTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+        document.getElementById("theme-icon").className = activeTheme === 'dark' ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        localStorage.setItem('theme-mode', activeTheme);
+      };
+
+      await fetchSettings();
+      
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentUserProfile = user;
+          try {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if (userSnap.exists()) {
+              currentUserProfile.customData = userSnap.data();
+            }
+          } catch(e) {}
+          renderAuthMenu(true);
+        } else {
+          currentUserProfile = null;
+          renderAuthMenu(false);
+        }
+        hidePreloader();
+        initRouter();
+        updateCartCounter();
+      });
+    });
+
+    async function fetchSettings() {
+      try {
+        const docSnap = await getDoc(doc(db, "settings", "general"));
+        if (docSnap.exists()) {
+          // Merge settings
+          appSettings = { ...appSettings, ...docSnap.data() };
+        }
+        // Force fallback if the setting loaded from database has an empty or invalid logoUrl
+        if (!appSettings.logoUrl || appSettings.logoUrl.trim() === "") {
+          appSettings.logoUrl = "https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png";
+        }
+        renderLogoStyles();
+      } catch (err) {
+        console.error(err);
+        renderLogoStyles();
+      }
+    }
+
+    function renderLogoStyles() {
+      const defaultLogo = "https://i.postimg.cc/2SYMZM0n/Picsart-26-06-03-23-12-02-233.png";
+      // Double check fallback inside render process
+      if (!appSettings.logoUrl || appSettings.logoUrl.trim() === "") {
+        appSettings.logoUrl = defaultLogo;
+      }
+
+      const activeAppName = appSettings.appName || "SMG STORE BD";
+      let logoMarkup = `<img src="${appSettings.logoUrl}" alt="Logo" style="max-height: 40px; border-radius: 4px; object-fit: contain; flex-shrink: 0;">`;
+
+      const logoAnchor = document.getElementById("main-logo-anchor");
+      if (logoAnchor) {
+        logoAnchor.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+            ${logoMarkup}
+            <span style="font-weight: 700; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${activeAppName}</span>
+          </div>
+        `;
+      }
+      
+      const drawerLogoHolder = document.getElementById("drawer-logo-holder");
+      if (drawerLogoHolder) {
+        drawerLogoHolder.innerHTML = `
+          <img src="${appSettings.logoUrl}" style="max-height: 30px;">
+          <span>${activeAppName}</span>
+        `;
+      }
+
+      const preloaderTitle = document.querySelector(".preloader-title");
+      if (preloaderTitle) preloaderTitle.innerText = activeAppName;
+
+      const preloaderLogoImgHolder = document.getElementById("preloader-logo-img-holder");
+      if (preloaderLogoImgHolder) {
+        preloaderLogoImgHolder.innerHTML = `<img src="${appSettings.logoUrl}" alt="Logo" style="max-height: 90px; border-radius: 8px; object-fit: contain; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px;">`;
+      }
+    }
+
+    function renderAuthMenu(isLoggedIn) {
+      const drawerAuthBox = document.getElementById("drawer-auth-box");
+      const mobileProfileTab = document.getElementById("mobile-profile-tab");
+
+      if (isLoggedIn) {
+        if(drawerAuthBox) {
+          drawerAuthBox.innerHTML = `
+            <a href="#/profile" class="btn btn-outline" style="margin-bottom: 8px;" onclick="closeSidebarDrawer()"><i class="fa-solid fa-user"></i> প্রোফাইল</a>
+            <button class="btn btn-primary" id="drawer-logout-btn" style="background-color:var(--danger-color);"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
+          `;
+          document.getElementById("drawer-logout-btn").onclick = () => {
+            closeSidebarDrawer();
+            signOut(auth).then(() => {
+              showToast("সাফল্যের সাথে লগআউট সম্পন্ন হয়েছে।");
+              window.location.hash = "#/";
+            });
+          };
+        }
+        if(mobileProfileTab) mobileProfileTab.href = "#/profile";
+      } else {
+        if(drawerAuthBox) {
+          drawerAuthBox.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <a href="#/login" class="btn btn-outline" onclick="closeSidebarDrawer()">লগইন</a>
+              <a href="#/register" class="btn btn-primary" onclick="closeSidebarDrawer()">রেজিস্ট্রেশন</a>
+            </div>
+          `;
+        }
+        if(mobileProfileTab) mobileProfileTab.href = "#/login";
+      }
+    }
+
+    function initRouter() {
+      const handleRouting = () => {
+        // Automatically close side drawer when navigating or using the browser back button
+        if (typeof window.closeSidebarDrawer === 'function') {
+          window.closeSidebarDrawer();
+        }
+
+        const hash = window.location.hash || '#/';
+        if (hash === '#/') {
+          renderHome();
+        } else if (hash.startsWith('#/product/')) {
+          const productId = hash.split('#/product/')[1];
+          renderProductDetail(productId);
+        } else if (hash === '#/cart') {
+          renderCart();
+        } else if (hash === '#/checkout') {
+          renderCheckout();
+        } else if (hash === '#/track') {
+          renderTrack();
+        } else if (hash === '#/chat') {
+          renderChatSupportPage();
+        } else if (hash === '#/about') {
+          renderAboutUsPage();
+        } else if (hash === '#/privacy') {
+          renderPrivacyPolicyPage();
+        } else if (hash.startsWith('#/login')) {
+          renderLogin();
+        } else if (hash === '#/register') {
+          renderRegister();
+        } else if (hash === '#/profile') {
+          renderProfile();
+        }
+        window.scrollTo(0, 0);
+      };
+      window.removeEventListener('hashchange', handleRouting);
+      window.addEventListener('hashchange', handleRouting);
+      handleRouting();
+    }
+
+    async function renderHome() {
+      const viewport = document.getElementById("app-viewport");
+      viewport.innerHTML = `
+        <div class="slider-container">
+          <div class="slider-wrapper" id="home-slides-container">
+             <div class="loader-container" style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="preloader-spinner"></div></div>
+          </div>
+          <div class="slider-caption" id="home-slider-caption"></div>
+        </div>
+
+        <section class="category-section">
+          <h2 class="section-title">আমাদের সব ক্যাটাগরি</h2>
+          <div class="category-grid" id="category-list"></div>
+        </section>
+
+        <section class="offers-section" id="timer-offers-section">
+          <h2 class="section-title">সীমিত সময়ের অফার (Limited Offers)</h2>
+          <div class="offers-grid" id="limited-offers-container"></div>
+        </section>
+
+        <section class="product-showcase">
+          <h2 class="section-title" id="product-grid-heading">নতুন কালেকশন (New Arrivals)</h2>
+          <div class="products-grid" id="new-arrivals"></div>
+        </section>
+      `;
+
+      await renderHomeSliders();
+      await loadCategories();
+      await loadLimitedTimerOffers();
+      await loadNewArrivals();
+
+      const searchBox = document.getElementById("live-search-input");
+      if (searchBox) {
+        searchBox.value = searchFilterQuery;
+        searchBox.addEventListener("input", (e) => {
+          searchFilterQuery = e.target.value.toLowerCase().trim();
+          filterProductsDisplay();
+        });
+      }
+    }
+
+    async function renderHomeSliders() {
+      const container = document.getElementById("home-slides-container");
+      const captionElement = document.getElementById("home-slider-caption");
+      try {
+        // Serve from cache if already loaded once
+        if (loadedSliders.length === 0) {
+          const snap = await getDocs(collection(db, "sliders"));
+          if (!snap.empty) {
+            snap.forEach(docSnap => loadedSliders.push(docSnap.data()));
+          } else {
+            loadedSliders = [{ imageUrl: "https://via.placeholder.com/1200x400", title: "মেগা জার্সি ডিসকাউন্ট অফার!", productId: "" }];
+          }
+        }
+
+        container.innerHTML = "";
+        loadedSliders.forEach((slide, index) => {
+          const div = document.createElement("div");
+          div.className = `slide ${index === 0 ? "active" : ""}`;
+          div.innerHTML = `<img src="${slide.imageUrl}" alt="${slide.title || ''}">`;
+          div.onclick = () => {
+            if (slide.productId) window.location.hash = `#/product/${slide.productId}`;
+          };
+          container.appendChild(div);
+        });
+
+        if (captionElement && loadedSliders.length > 0) {
+          captionElement.innerText = loadedSliders[0].title || "";
+        }
+        startSlideshow(loadedSliders);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function startSlideshow(slidesData) {
+      const slides = document.querySelectorAll('.slide');
+      const captionElement = document.getElementById("home-slider-caption");
+      let activeIndex = 0;
+      if (slides.length <= 1) return;
+
+      if (window.appSliderTimer) clearInterval(window.appSliderTimer);
+      window.appSliderTimer = setInterval(() => {
+        if(slides[activeIndex]) slides[activeIndex].classList.remove('active');
+        activeIndex = (activeIndex + 1) % slides.length;
+        if(slides[activeIndex]) slides[activeIndex].classList.add('active');
+        if (captionElement && slidesData[activeIndex]) {
+          captionElement.innerText = slidesData[activeIndex].title || "";
+        }
+      }, 5000);
+    }
+
+    async function loadLimitedTimerOffers() {
+      const container = document.getElementById("limited-offers-container");
+      try {
+        // Serve from cache if already loaded once
+        if (loadedOffers.length === 0) {
+          const snap = await getDocs(collection(db, "offers"));
+          snap.forEach(docSnap => {
+            loadedOffers.push({ id: docSnap.id, ...docSnap.data() });
+          });
+        }
+
+        container.innerHTML = "";
+        if (loadedOffers.length === 0) {
+          const section = document.getElementById("timer-offers-section");
+          if (section) section.style.display = "none";
+          return;
+        }
+
+        loadedOffers.forEach(offer => {
+          const cardId = `timer-${offer.id}`;
+          const itemWrapper = document.createElement("div");
+          itemWrapper.className = "offer-item-wrapper";
+          itemWrapper.style.display = "flex";
+          itemWrapper.style.flexDirection = "column";
+          itemWrapper.style.gap = "8px";
+          itemWrapper.style.width = "100%";
+          itemWrapper.style.alignItems = "center";
+
+          const targetUrl = offer.productId ? `#/product/${offer.productId}` : '#/';
+
+          itemWrapper.innerHTML = `
+            <div class="offer-timer-top" id="${cardId}" style="margin-bottom: 0; width: 100%; box-sizing: border-box;">অফার লোড হচ্ছে...</div>
+            <div class="product-card" onclick="window.location.hash='${targetUrl}'" style="width: 100%; flex-grow: 1;">
+              <div class="product-img-wrapper" style="aspect-ratio: 1 / 1; width: 100%;">
+                <img src="${offer.imageUrl || 'https://via.placeholder.com/150'}" alt="${offer.title}">
+              </div>
+              <div class="product-info">
+                <div class="product-title" style="text-align: left;">${offer.title}</div>
+                <div style="font-size: 0.72rem; color: var(--text-secondary); text-align: left; margin-top: 2px;">${offer.subtitle || ""}</div>
+              </div>
+            </div>
+          `;
+          container.appendChild(itemWrapper);
+          startCountdown(offer.endsAt, cardId);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function startCountdown(targetString, elementId) {
+      const targetDate = new Date(targetString).getTime();
+      const timerInterval = setInterval(() => {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          clearInterval(timerInterval);
+          return;
+        }
+        const now = new Date().getTime();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          element.innerText = "সময় শেষ!";
+          clearInterval(timerInterval);
+          return;
+        }
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(diff / (1000 * 60 * 60 * 24)) * 24;
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        element.innerText = `⏳ ${hours}h : ${minutes}m : ${seconds}s`;
+      }, 1000);
+    }
+
+    async function loadCategories() {
+      const container = document.getElementById("category-list");
+      const drawerSub = document.getElementById("drawer-categories-sub");
+      try {
+        // Serve from cache if already loaded once
+        if (loadedCategories.length === 0) {
+          const snap = await getDocs(collection(db, "categories"));
+          snap.forEach(docSnap => {
+            loadedCategories.push({ id: docSnap.id, ...docSnap.data() });
+          });
+        }
+
+        if (container) container.innerHTML = "";
+        if (drawerSub) drawerSub.innerHTML = "";
+
+        // First item is "All" category card
+        if (container) {
+          const allCard = document.createElement("div");
+          allCard.className = `category-card ${selectedCategoryFilter === 'all' ? 'active' : ''}`;
+          allCard.id = "cat-card-all";
+          allCard.innerHTML = `
+            <div class="category-img-wrap">
+              <img src="https://cdn-icons-png.flaticon.com/512/3502/3502685.png" alt="All">
+            </div>
+            <span class="category-title-text">All</span>
+          `;
+          allCard.onclick = () => window.navigateAndFilterCategory("all");
+          container.appendChild(allCard);
+        }
+
+        if (drawerSub) {
+          const allSubLink = document.createElement("a");
+          allSubLink.href = "javascript:void(0)";
+          allSubLink.className = "drawer-sub-item";
+          allSubLink.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3502/3502685.png" style="width:16px; height:16px; object-fit:contain; margin-right:8px; vertical-align:middle;"> All Products`;
+          allSubLink.onclick = () => {
+            window.navigateAndFilterCategory("all");
+          };
+          drawerSub.appendChild(allSubLink);
+        }
+
+        loadedCategories.forEach(cat => {
+          const catImg = cat.imageUrl || "https://cdn-icons-png.flaticon.com/512/859/859270.png";
+          const catId = cat.id;
+
+          if (container) {
+            const card = document.createElement("div");
+            card.className = `category-card ${selectedCategoryFilter === catId ? 'active' : ''}`;
+            card.id = `cat-card-${catId}`;
+            card.innerHTML = `
+              <div class="category-img-wrap"><img src="${catImg}" alt="${cat.name}"></div>
+              <span class="category-title-text">${cat.name}</span>
+            `;
+            card.onclick = () => window.navigateAndFilterCategory(catId);
+            container.appendChild(card);
+          }
+
+          if (drawerSub) {
+            const subLink = document.createElement("a");
+            subLink.href = "javascript:void(0)";
+            subLink.className = "drawer-sub-item";
+            subLink.innerHTML = `<img src="${catImg}" style="width:16px; height:16px; object-fit:contain; margin-right:8px; vertical-align:middle;"> ${cat.name}`;
+            subLink.onclick = () => {
+              window.navigateAndFilterCategory(catId);
+            };
+            drawerSub.appendChild(subLink);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadNewArrivals() {
+      try {
+        // Prevent re-fetching database if products are already cached in-memory
+        if (allLoadedProducts.length > 0) {
+          filterProductsDisplay();
+          return;
+        }
+
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        allLoadedProducts = [];
+
+        snap.forEach(docSnap => {
+          allLoadedProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        filterProductsDisplay();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function filterCategoryProducts(categoryId, cardHtmlId) {
+      selectedCategoryFilter = categoryId;
+      document.querySelectorAll('.category-card').forEach(el => el.classList.remove('active'));
+      const activeCard = document.getElementById(cardHtmlId);
+      if (activeCard) activeCard.classList.add('active');
+
+      const gridHeading = document.getElementById("product-grid-heading");
+      if (categoryId === 'all') {
+        if (gridHeading) gridHeading.innerText = "নতুন কালেকশন (New Arrivals)";
+      } else {
+        const catCardText = activeCard ? activeCard.querySelector('.category-title-text').innerText : "ক্যাটাগরি প্রোডাক্টস";
+        if (gridHeading) gridHeading.innerText = catCardText;
+      }
+      filterProductsDisplay();
+    }
+
+    function filterProductsDisplay() {
+      const container = document.getElementById("new-arrivals");
+      if (!container) return;
+
+      let filtered = allLoadedProducts;
+      if (selectedCategoryFilter !== "all") {
+        filtered = filtered.filter(p => p.categoryId === selectedCategoryFilter);
+      }
+
+      // Supports Name and Manual Product Code Search
+      if (searchFilterQuery) {
+        filtered = filtered.filter(p => {
+          const nameMatch = p.name ? p.name.toLowerCase().includes(searchFilterQuery) : false;
+          const codeMatch = p.productCode ? p.productCode.toLowerCase().includes(searchFilterQuery) : false;
+          return nameMatch || codeMatch;
+        });
+      }
+
+      container.innerHTML = "";
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='grid-column:1/-1; text-align:center; padding: 20px 0;'>কোনো জার্সি পাওয়া যায়নি।</p>";
+        return;
+      }
+
+      filtered.forEach(item => {
+        const isDiscount = item.discountPrice && Number(item.discountPrice) < Number(item.price);
+        const isOutOfStock = item.stockStatus === 'out-of-stock';
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.onclick = () => {
+          window.location.hash = `#/product/${item.id}`;
+        };
+
+        // Conditional rendering for stock status on the catalog list
+        const badgeMarkup = isOutOfStock 
+          ? '<span class="product-tag" style="background-color:var(--danger-color);">STOCK OUT</span>' 
+          : (isDiscount ? '<span class="product-tag discount">OFFER</span>' : '<span class="product-tag">NEW</span>');
+
+        const buttonMarkup = isOutOfStock
+          ? `<span class="btn" style="background-color:var(--text-secondary); color:white; font-size:0.75rem; cursor:not-allowed;">স্টক আউট</span>`
+          : `<span class="btn btn-primary" style="font-size:0.75rem;">অর্ডার করুন</span>`;
+
+        card.innerHTML = `
+          ${badgeMarkup}
+          <div class="product-img-wrapper" style="${isOutOfStock ? 'opacity: 0.6;' : ''}">
+            <img src="${item.images[0] || 'placeholder.jpg'}" alt="${item.name}">
+          </div>
+          <div class="product-info">
+            <div class="product-title">${item.name}</div>
+            <div class="price-container">
+              <span class="current-price">৳${isDiscount ? item.discountPrice : item.price}</span>
+              ${isDiscount ? `<span class="old-price">৳${item.price}</span>` : ""}
+            </div>
+            <div style="display:flex; gap:6px; margin-top: auto;">
+              ${buttonMarkup}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function renderProductDetail(id) {
+      const viewport = document.getElementById("app-viewport");
+      viewport.innerHTML = `<div style="text-align:center; padding:50px;"><div class="preloader-spinner" style="margin:auto;"></div></div>`;
+
+      try {
+        const docSnap = await getDoc(doc(db, "products", id));
+        if (!docSnap.exists()) {
+          viewport.innerHTML = `<div style="text-align:center; padding:50px;">প্রোডাক্ট পাওয়া যায়নি!</div>`;
+          return;
+        }
+
+        const p = docSnap.data();
+        const isDiscount = p.discountPrice && Number(p.discountPrice) < Number(p.price);
+        const activePrice = isDiscount ? p.discountPrice : p.price;
+        const imgList = p.images || [];
+        const currentProductLink = `${window.location.origin}${window.location.pathname}#/product/${id}`;
+
+        // Fixed Stock Status Sync: check against 'out-of-stock' value from admin panel
+        const isInStock = p.stockStatus !== 'out-of-stock';
+        
+        const stockBadgeMarkup = isInStock 
+          ? `<div style="margin-bottom: 12px;"><span style="background: rgba(16, 185, 129, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;"><i class="fa-solid fa-circle-check"></i> স্টকে আছে (In Stock)</span></div>`
+          : `<div style="margin-bottom: 12px;"><span style="background: rgba(239, 68, 68, 0.15); color: var(--danger-color); border: 1px solid var(--danger-color); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;"><i class="fa-solid fa-circle-xmark"></i> স্টক আউট (Stock Out)</span></div>`;
+
+        let thumbsMarkup = "";
+        if (imgList.length > 1) {
+          thumbsMarkup = `
+            <div class="thumbnail-row">
+              ${imgList.map((imgUrl, idx) => `
+                <img class="gallery-thumb ${idx === 0 ? 'active' : ''}" src="${imgUrl}" onclick="window.swapMainProductImage('${imgUrl}', this)">
+              `).join('')}
+            </div>
+          `;
+        }
+
+        // Render Action buttons conditionally based on corrected stock status
+        const directOrderBtnMarkup = isInStock 
+          ? `<button class="btn btn-primary" id="direct-order-action" style="flex: 1; padding:12px; font-size:1rem; height:50px; background-color: #f59e0b;"><i class="fa-solid fa-bolt"></i> সরাসরি অর্ডার করুন</button>`
+          : `<button class="btn btn-primary" disabled style="flex: 1; padding:12px; font-size:1rem; height:50px; background-color: var(--text-secondary); cursor: not-allowed;"><i class="fa-solid fa-circle-xmark"></i> স্টক আউট</button>`;
+
+        const addToCartBtnMarkup = isInStock
+          ? `<button class="btn btn-primary btn-add-to-cart" id="add-to-cart-action" style="flex: 1; padding:10px; height:45px;"><i class="fa-solid fa-cart-shopping"></i> কার্টে যোগ করুন</button>`
+          : `<button class="btn btn-primary" disabled style="flex: 1; padding:10px; height:45px; background-color: var(--text-secondary); cursor: not-allowed;"><i class="fa-solid fa-circle-xmark"></i> কার্ট নিষ্ক্রিয়</button>`;
+
+        viewport.innerHTML = `
+          <div class="product-details-container">
+            <div class="details-gallery">
+              <div class="main-image-wrap">
+                <img src="${imgList[0]}" id="main-detail-view-img">
+              </div>
+              ${thumbsMarkup}
+            </div>
+            <div class="details-meta">
+              <!-- Stock Badge Position -->
+              ${stockBadgeMarkup}
+
+              <h1 style="font-size:1.3rem; font-weight:700; margin-bottom:10px;">${p.name}</h1>
+              ${p.productCode ? `<p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:5px;">প্রোডাক্ট কোড: <strong>${p.productCode}</strong></p>` : ''}
+              
+              <div class="price-container" style="margin:10px 0;">
+                <span class="current-price" style="font-size:1.6rem;">৳${activePrice}</span>
+                ${isDiscount ? `<span class="old-price" style="font-size:1.15rem;">৳${p.price}</span>` : ""}
+              </div>
+
+              <!-- Qty Selection -->
+              <h4 style="font-size:0.9rem; margin-top:15px;">পরিমাণ নির্ধারণ করুন:</h4>
+              <div class="qty-selector">
+                <button class="qty-btn" id="qty-minus-btn" ${!isInStock ? 'disabled style="opacity:0.5;"' : ''}>-</button>
+                <span class="qty-value" id="qty-count-val">1</span>
+                <button class="qty-btn" id="qty-plus-btn" ${!isInStock ? 'disabled style="opacity:0.5;"' : ''}>+</button>
+              </div>
+              
+              <!-- Size Selection -->
+              <h4 style="font-size:0.9rem; margin-top:15px;">সাইজ সিলেক্ট করুন:</h4>
+              <div class="size-selector" id="size-selector-wrap">
+                ${p.sizes.map(size => `<button class="size-btn" data-size="${size}" ${!isInStock ? 'disabled' : ''}>${size}</button>`).join('')}
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <!-- Direct Order & Copy Link Side by Side -->
+                <div style="display:flex; gap:10px; width:100%;">
+                  ${directOrderBtnMarkup}
+                  <button class="btn btn-outline" style="width:50px; height:50px; padding:0; display:flex; justify-content:center; align-items:center;" onclick="copyGlobalText('${currentProductLink}', 'প্রোডাক্ট লিংক কপি করা হয়েছে!')" title="প্রোডাক্ট লিংক কপি করুন">
+                    <i class="fa-regular fa-copy" style="font-size: 1.25rem;"></i>
+                  </button>
+                </div>
+
+                <!-- Add to Cart & Add to Favorite Side by Side -->
+                <div style="display:flex; gap:10px; width:100%;">
+                  ${addToCartBtnMarkup}
+                  <button class="btn btn-outline" id="favorite-toggle-action" style="width:45px; height:45px; padding:0; display:flex; justify-content:center; align-items:center;" title="ফেভারিট তালিকায় রাখুন">
+                    <i id="fav-icon-heart" class="fa-regular fa-heart" style="font-size: 1.2rem;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="product-description-box">
+                <div class="product-description-title">জার্সি ডেসক্রিপশন:</div>
+                <div class="product-description-text">${p.description || "কোনো ডেসক্রিপশন পাওয়া যায়নি।"}</div>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-detail-action">
+            <button class="btn btn-primary" id="sticky-direct-order" style="height:45px; background-color: #f59e0b;" ${!isInStock ? 'disabled style="background-color: var(--text-secondary); cursor: not-allowed;"' : ''}><i class="fa-solid fa-bolt"></i> সরাসরি অর্ডার করুন</button>
+          </div>
+        `;
+
+        window.swapMainProductImage = (srcUrl, thumbElement) => {
+          document.getElementById("main-detail-view-img").src = srcUrl;
+          document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
+          if(thumbElement) thumbElement.classList.add("active");
+        };
+
+        if (isInStock) {
+          // Qty Actions
+          let selectedQty = 1;
+          const qtyMinus = document.getElementById("qty-minus-btn");
+          const qtyPlus = document.getElementById("qty-plus-btn");
+          const qtyCountVal = document.getElementById("qty-count-val");
+
+          qtyMinus.onclick = () => {
+            if (selectedQty > 1) {
+              selectedQty--;
+              qtyCountVal.innerText = selectedQty;
+            }
+          };
+          qtyPlus.onclick = () => {
+            selectedQty++;
+            qtyCountVal.innerText = selectedQty;
+          };
+
+          // Size Actions
+          let selectedSize = p.sizes[0] || "M";
+          const sizeBtns = document.querySelectorAll('.size-btn');
+          sizeBtns.forEach(btn => {
+            if (btn.dataset.size === selectedSize) btn.classList.add('active');
+            btn.onclick = () => {
+              sizeBtns.forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              selectedSize = btn.dataset.size;
+            };
+          });
+
+          // Add to Cart Logic
+          const handleAddToCart = (quiet = false) => {
+            const productToAdd = { id, name: p.name, price: Number(activePrice), image: imgList[0], size: selectedSize, quantity: selectedQty };
+            const existing = cart.find(item => item.id === productToAdd.id && item.size === productToAdd.size);
+            if (existing) {
+              existing.quantity += productToAdd.quantity;
+            } else {
+              cart.push(productToAdd);
+            }
+            saveCart();
+            if (!quiet) showToast("কার্টে সফলভাবে যুক্ত করা হয়েছে!");
+          };
+
+          document.getElementById("add-to-cart-action").onclick = () => handleAddToCart(false);
+
+          // Direct Order Action
+          const handleDirectOrder = () => {
+            cart = [{ id, name: p.name, price: Number(activePrice), image: imgList[0], size: selectedSize, quantity: selectedQty }];
+            saveCart();
+            window.location.hash = "#/checkout";
+          };
+
+          document.getElementById("direct-order-action").onclick = handleDirectOrder;
+          const stickyBtn = document.getElementById("sticky-direct-order");
+          if(stickyBtn) stickyBtn.onclick = handleDirectOrder;
+        }
+
+        // Favorite Feature Handler
+        const favIcon = document.getElementById("fav-icon-heart");
+        const updateFavBtnState = () => {
+          let favorites = JSON.parse(localStorage.getItem('smg_favorites')) || [];
+          const exists = favorites.some(item => item.id === id);
+          if (exists) {
+            favIcon.className = "fa-solid fa-heart";
+            favIcon.style.color = "var(--danger-color)";
+          } else {
+            favIcon.className = "fa-regular fa-heart";
+            favIcon.style.color = "";
+          }
+        };
+
+        updateFavBtnState();
+
+        document.getElementById("favorite-toggle-action").onclick = () => {
+          let favorites = JSON.parse(localStorage.getItem('smg_favorites')) || [];
+          const idx = favorites.findIndex(item => item.id === id);
+          if (idx > -1) {
+            favorites.splice(idx, 1);
+            showToast("পছন্দের তালিকা থেকে বাদ দেওয়া হয়েছে");
+          } else {
+            favorites.push({ id, name: p.name, price: Number(activePrice), image: imgList[0] });
+            showToast("পছন্দের তালিকায় যুক্ত করা হয়েছে");
+          }
+          localStorage.setItem('smg_favorites', JSON.stringify(favorites));
+          updateFavBtnState();
+        };
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function saveCart() {
+      localStorage.setItem('smg_cart', JSON.stringify(cart));
+      updateCartCounter();
+    }
+
+    function updateCartCounter() {
+      const count = cart.reduce((acc, current) => acc + current.quantity, 0);
+      const cartCountEl = document.getElementById("cart-count");
+      if (cartCountEl) cartCountEl.innerText = count;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      if (toast) {
+        toast.innerText = message;
+        toast.classList.remove("hidden");
+        setTimeout(() => toast.classList.add("hidden"), 2500);
+      }
+    }
+
+    function renderAboutUsPage() {
+      document.getElementById("app-viewport").innerHTML = `
+        <div class="cart-viewport" style="max-width:600px;">
+          <h2>আমাদের সম্পর্কে (About Us)</h2>
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:20px; margin-top:15px; white-space:pre-wrap; font-size:0.95rem;">
+            ${appSettings.aboutUs}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrivacyPolicyPage() {
+      document.getElementById("app-viewport").innerHTML = `
+        <div class="cart-viewport" style="max-width:600px;">
+          <h2>প্রাইভেসি পলিসি (Privacy Policy)</h2>
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:20px; margin-top:15px; white-space:pre-wrap; font-size:0.95rem;">
+            ${appSettings.privacyPolicy}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChatSupportPage() {
+      document.getElementById("app-viewport").innerHTML = `
+        <div class="cart-viewport" style="max-width:500px; text-align:center; padding-top:40px;">
+          <i class="fa-solid fa-comments" style="font-size:3rem; color:var(--accent-color);"></i>
+          <h2 style="margin:15px 0;">সরাসরি চ্যাট বা যোগাযোগ করুন</h2>
+          <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:20px;">যেকোনো তথ্যের জন্য নিচে কল করুন অথবা হোয়াটসঅ্যাপ/মেসেঞ্জারে মেসেজ দিন।</p>
+          <a href="tel:${appSettings.phone}" class="btn btn-primary" style="margin-bottom:12px; padding:12px; font-size:0.95rem; background-color: #3b82f6;"><i class="fa-solid fa-phone"></i> সরাসরি কল করুন</a>
+          <a href="https://wa.me/${appSettings.whatsapp}" target="_blank" class="btn btn-primary" style="margin-bottom:12px; padding:12px; font-size:0.95rem; background-color: #25d366;"><i class="fa-brands fa-whatsapp"></i> WhatsApp Chat</a>
+          <a href="${appSettings.fbPage}" target="_blank" class="btn btn-outline" style="padding:12px; font-size:0.95rem;"><i class="fa-brands fa-facebook"></i> Messenger</a>
+        </div>
+      `;
+    }
+
+    function renderCart() {
+      const viewport = document.getElementById("app-viewport");
+      if (cart.length === 0) {
+        viewport.innerHTML = `<div class="cart-viewport" style="text-align:center; padding:60px 0;"><h3>কার্ট খালি রয়েছে!</h3><a href="#/" class="btn btn-primary" style="max-width:180px; margin:20px auto;">Shop Now</a></div>`;
+        return;
+      }
+      let subtotal = 0;
+      let itemsHtml = cart.map((item, index) => {
+        subtotal += item.price * item.quantity;
+        return `
+          <div style="display:flex; gap:10px; background:var(--bg-secondary); border:1px solid var(--border-color); padding:10px; border-radius:8px; margin-bottom:10px; align-items:center;">
+            <img src="${item.image}" style="width:60px; height:60px; object-fit:contain; background:var(--bg-primary); border-radius:4px;">
+            <div style="flex-grow:1;">
+              <h5 style="font-size:0.85rem; margin-bottom:3px;">${item.name} (${item.size})</h5>
+              <span style="font-size:0.85rem; font-weight:700; color:var(--accent-color);">৳${item.price}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn btn-outline" style="width:25px; height:25px; padding:0;" onclick="window.updateQty(${index}, -1)">-</button>
+              <span>${item.quantity}</span>
+              <button class="btn btn-outline" style="width:25px; height:25px; padding:0;" onclick="window.updateQty(${index}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      viewport.innerHTML = `
+        <div class="cart-viewport">
+          <h2>Shopping Cart (${cart.length})</h2>
+          <div style="margin-top:15px;">${itemsHtml}</div>
+          <div style="text-align:right; margin:15px 0;"><h3>Total: ৳${subtotal}</h3></div>
+          <div style="display:flex; gap:10px;">
+            <a href="#/" class="btn btn-outline">আরো শপিং করুন</a>
+            <a href="#/checkout" class="btn btn-primary">অর্ডার করুন</a>
+          </div>
+        </div>
+      `;
+
+      window.updateQty = (index, change) => {
+        cart[index].quantity += change;
+        if(cart[index].quantity <= 0) cart.splice(index, 1);
+        saveCart();
+        renderCart();
+      };
+    }
+
+    function renderCheckout() {
+      if (!currentUserProfile) {
+        showToast("অর্ডার করার আগে দয়া করে লগইন করুন!");
+        window.location.hash = "#/login?redirect=checkout";
+        return;
+      }
+      const viewport = document.getElementById("app-viewport");
+      let subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+      const codOptionMarkup = appSettings.codEnabled ? `
+        <label style="display:flex; align-items:center; gap:8px; background:var(--bg-secondary); padding:10px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
+          <input type="radio" name="payment-method" value="cod" checked required>
+          <span>ক্যাশ অন ডেলিভারি</span>
+        </label>
+      ` : '';
+
+      viewport.innerHTML = `
+        <div class="checkout-viewport">
+          <h2>অর্ডার নিশ্চিত করুন</h2>
+          <div class="checkout-grid" style="margin-top:15px;">
+            <form id="order-submit-form">
+              <!-- Advance Delivery Charge Payment Note -->
+              <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--gold-color); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px;">
+                <p style="font-weight: 700; color: var(--gold-color); margin-bottom: 4px;"><i class="fa-solid fa-circle-info"></i> পেমেন্ট সংক্রান্ত গুরুত্বপূর্ণ নোটিশ:</p>
+                <p style="color: var(--text-primary); font-size: 0.8rem; line-height: 1.4;">
+                  ${appSettings.codEnabled 
+                    ? "ক্যাশ অন ডেলিভারি অন রয়েছে। আপনি চাইলে সম্পূর্ণ টাকা জার্সির ডেলিভারি বুঝে নেওয়ার সময় দিতে পারবেন। এছাড়া অগ্রিম ডেলিভারি চার্জ পরিশোধ করতে নিচের পেমেন্ট মেথডটি নির্বাচন করতে পারেন।" 
+                    : "বর্তমানে ক্যাশ অন ডেলিভারি বন্ধ রয়েছে। অর্ডারটি সম্পন্ন করতে দয়া করে আপনার নির্ধারিত ডেলিভারি চার্জটি অগ্রিম পরিশোধ করে ট্রানজেকশন আইডি (TxID) বক্সে দিন (বাধ্যতামূলক)।"
+                  }
+                </p>
+              </div>
+
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem; font-weight:600;">আপনার নাম *</label>
+                <input type="text" id="cust-name" required style="width:100%; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);" value="${currentUserProfile.displayName || ''}">
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem; font-weight:600;">মোবাইল নাম্বার *</label>
+                <input type="tel" id="cust-phone" required style="width:100%; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);" value="${currentUserProfile.customData?.phone || ''}">
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem; font-weight:600;">ডেলিভারি ঠিকানা *</label>
+                <textarea id="cust-address" required rows="3" style="width:100%; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary); font-size: 0.9rem;">${currentUserProfile.customData?.address || ''}</textarea>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem; font-weight:600;">ডেলিভারি এলাকা নির্ধারণ করুন *</label>
+                <select id="delivery-location" required style="width:100%; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);">
+                  <option value="inside">ঢাকার ভেতরে (৳${appSettings.insideDhakaCharge})</option>
+                  <option value="suburb">ঢাকার আশেপাশে/সাভার/গাজীপুর (৳${appSettings.subDhakaCharge})</option>
+                  <option value="outside">ঢাকার বাইরে (৳${appSettings.outsideDhakaCharge})</option>
+                </select>
+              </div>
+
+              <!-- Payment Method Selection -->
+              <div style="margin-bottom:15px;">
+                <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:5px;">পেমেন্ট মেথড সিলেক্ট করুন *</label>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  ${codOptionMarkup}
+                  <label style="display:flex; align-items:center; gap:8px; background:var(--bg-secondary); padding:10px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
+                    <input type="radio" name="payment-method" value="mobile-banking" ${!appSettings.codEnabled ? 'checked' : ''} required>
+                    <span>মোবাইল ব্যাংকিং (বিকাশ/নগদ/উপায়)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Copyable Payment Numbers Container (Hidden if COD is selected, shown if Mobile Banking is selected) -->
+              <div id="payment-numbers-container" style="display:none; background:rgba(16,185,129,0.08); padding:12px; border-radius:8px; font-size:0.85rem; margin:15px 0; border: 1px dashed var(--accent-color);">
+                <p style="margin-bottom:8px; font-weight:bold; color:var(--accent-color);">পেমেন্ট নাম্বারসমূহ (ক্লিক করে কপি করুন):</p>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <div>bKash: <strong>${appSettings.bkash}</strong> <span class="btn-copy" onclick="copyGlobalText('${appSettings.bkash}', 'বিকাশ নম্বর কপি হয়েছে!')"><i class="fa-regular fa-copy"></i> Copy</span></div>
+                  <div>Nagad: <strong>${appSettings.nagad}</strong> <span class="btn-copy" onclick="copyGlobalText('${appSettings.nagad}', 'নগদ নম্বর কপি হয়েছে!')"><i class="fa-regular fa-copy"></i> Copy</span></div>
+                  <div>Upay: <strong>${appSettings.upay}</strong> <span class="btn-copy" onclick="copyGlobalText('${appSettings.upay}', 'উপায় নম্বর কপি হয়েছে!')"><i class="fa-regular fa-copy"></i> Copy</span></div>
+                </div>
+              </div>
+
+              <!-- TxID / Verification input container (Optional and hidden when COD is chosen) -->
+              <div id="txid-input-container" style="display:none; margin-bottom:15px;">
+                <label style="font-size:0.8rem; font-weight:600;" id="txid-label">পেমেন্ট ট্রানজেকশন আইডি (TxID)</label>
+                <input type="text" id="cust-txid" placeholder="যেমনঃ 8K90DF22" style="width:100%; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="padding:12px;">অর্ডার সাবমিট করুন</button>
+            </form>
+
+            <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:15px; border-radius:12px; align-self: flex-start;">
+              <h4>বিল ডিটেইলস</h4>
+              <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.9rem;">
+                <span>সাবটোটাল</span>
+                <span>৳${subtotal}</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.9rem;">
+                <span>ডেলিভারি চার্জ</span>
+                <span id="shipping-display">৳${appSettings.insideDhakaCharge}</span>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; margin-top:10px; font-weight:700; font-size:1.1rem; border-top:1px dashed var(--border-color); padding-top:10px; color:var(--accent-color);">
+                <span id="grand-total-label">সর্বমোট বিল</span>
+                <span id="grand-total-display">৳${subtotal + Number(appSettings.insideDhakaCharge)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const locSel = document.getElementById("delivery-location");
+      const custTxid = document.getElementById("cust-txid");
+      
+      const numbersBox = document.getElementById("payment-numbers-container");
+      const txidBox = document.getElementById("txid-input-container");
+
+      const updateCalculations = () => {
+        let charge = Number(appSettings.insideDhakaCharge);
+        if(locSel.value === 'suburb') charge = Number(appSettings.subDhakaCharge);
+        if(locSel.value === 'outside') charge = Number(appSettings.outsideDhakaCharge);
+
+        document.getElementById("shipping-display").innerText = `৳${charge}`;
+        document.getElementById("grand-total-display").innerText = `৳${subtotal + charge}`;
+
+        // Get active payment choice
+        const methodEl = document.querySelector('input[name="payment-method"]:checked');
+        const method = methodEl ? methodEl.value : 'cod';
+
+        if (method === 'cod') {
+          numbersBox.style.display = "none";
+          txidBox.style.display = "none";
+          custTxid.required = false;
+          document.getElementById("txid-label").innerHTML = 'পেমেন্ট ট্রানজেকশন আইডি (TxID) (ঐচ্ছিক)';
+        } else {
+          numbersBox.style.display = "block";
+          txidBox.style.display = "block";
+          
+          // If COD is disabled globally, make TXID strictly required
+          if (!appSettings.codEnabled) {
+            custTxid.required = true;
+            document.getElementById("txid-label").innerHTML = 'পেমেন্ট ট্রানজেকশন আইডি (TxID) *';
+          } else {
+            custTxid.required = false;
+            document.getElementById("txid-label").innerHTML = 'পেমেন্ট ট্রানজেকশন আইডি (TxID) (ঐচ্ছিক)';
+          }
+        }
+      };
+
+      locSel.onchange = updateCalculations;
+      document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+        radio.onchange = updateCalculations;
+      });
+
+      // Initial calculation run
+      updateCalculations();
+
+      document.getElementById("order-submit-form").onsubmit = async (e) => {
+        e.preventDefault();
+        let finalFee = Number(appSettings.insideDhakaCharge);
+        if(locSel.value === 'suburb') finalFee = Number(appSettings.subDhakaCharge);
+        if(locSel.value === 'outside') finalFee = Number(appSettings.outsideDhakaCharge);
+
+        const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+        const txidVal = custTxid.value.trim();
+
+        // Strict enforcement: if COD is off and Mobile payment TxID is empty, stop processing.
+        if (!appSettings.codEnabled && paymentMethod === 'mobile-banking' && !txidVal) {
+          showToast("অর্ডার সফল করতে অগ্রিম ডেলিভারি চার্জ পেমেন্টের ট্রানজেকশন আইডি (TxID) দেওয়া বাধ্যতামূলক!");
+          return;
+        }
+
+        // Custom order ID with "SMG-" Prefix
+        const randomDigits = Math.floor(100000 + Math.random() * 900000);
+        const customOrderId = `SMG-${randomDigits}`;
+
+        const orderData = {
+          userId: currentUserProfile.uid, 
+          userDetails: {
+            name: document.getElementById("cust-name").value,
+            phone: document.getElementById("cust-phone").value,
+            address: document.getElementById("cust-address").value,
+            txid: txidVal,
+          },
+          items: cart, // Contains Product Images automatically
+          totalAmount: subtotal + finalFee,
+          deliveryCharge: finalFee,
+          deliveryChargeAdvanced: paymentMethod !== 'cod',
+          paymentMethod: paymentMethod,
+          status: "Pending",
+          trackingCode: "", 
+          createdAt: new Date().toISOString()
+        };
+
+        try {
+          // Set custom ID in firestore orders collection
+          await setDoc(doc(db, "orders", customOrderId), orderData);
+          cart = [];
+          saveCart();
+          viewport.innerHTML = `
+            <div class="cart-viewport" style="text-align:center; padding:50px 20px; max-width: 650px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 30px auto;">
+              <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="fa-solid fa-circle-check" style="font-size: 3.5rem;"></i>
+              </div>
+              <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--accent-color); margin-bottom: 15px;">অর্ডারটি সফল হয়েছে!</h1>
+              
+              <div style="background: var(--bg-primary); padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--border-color); text-align: left;">
+                <p style="font-size: 1.1rem; text-align: center; font-weight: 700; margin-bottom: 10px; color: var(--text-primary);">
+                  অর্ডার আইডি: <span style="font-family: monospace; color: var(--accent-hover); font-size: 1.25rem;">${customOrderId}</span>
+                  <button class="btn-copy" onclick="copyGlobalText('${customOrderId}', 'অর্ডার আইডি কপি করা হয়েছে!')" style="vertical-align: middle;"><i class="fa-regular fa-copy"></i> কপি</button>
+                </p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+                <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 700; color: var(--text-primary); text-align: center; padding: 10px 0;">
+                  🎉 আপনার অর্ডার টি আমাদের কাছে সফলভাবে পৌছায়ছে। কিছুক্ষণের মধ্যে আমাদের একজন প্রতিনিধি আপনার মোবাইল নাম্বারে কন্টাক্ট করবে অর্ডার কনফার্ম করার জন্য। আপনাকে SMG STORE BD পক্ষ থেকে অসংখ্য ধন্যবাদ। 
+                </p>
+              </div>
+              
+              <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">
+                অর্ডারটির আপডেট ট্র্যাক করতে আইডিটি ব্যবহার করতে পারেন। আমাদের উপর আস্থা রাখার জন্য আপনাকে ধন্যবাদ।
+              </p>
+              <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="#/track" class="btn btn-outline" style="max-width: 180px;"><i class="fa-solid fa-truck"></i> অর্ডার ট্র্যাক করুন</a>
+                <a href="#/" class="btn btn-primary" style="max-width: 180px;"><i class="fa-solid fa-house"></i> হোমে ফিরে যান</a>
+              </div>
+            </div>
+          `;
+        } catch (err) {
+          showToast("অর্ডার সাবমিট করতে ত্রুটি হয়েছে।");
+        }
+      };
+    }
+
+    function renderLogin() {
+      const viewport = document.getElementById("app-viewport");
+      viewport.innerHTML = `
+        <div class="checkout-viewport" style="max-width:400px; padding-top:40px;">
+          <h2 style="text-align:center; margin-bottom:20px;">লগইন করুন</h2>
+          <form id="login-form">
+            <div style="margin-bottom:12px;">
+              <input type="email" id="login-email" required placeholder="ইমেইল" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);">
+            </div>
+            <div style="margin-bottom:12px;">
+              <input type="password" id="login-password" required placeholder="পাসওয়ার্ড" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);">
+            </div>
+            <button type="submit" class="btn btn-primary">লগইন</button>
+          </form>
+          <p style="text-align:center; margin-top:15px; font-size:0.85rem;">নতুন অ্যাকাউন্ট খুলতে চান? <a href="#/register" style="color:var(--accent-color); font-weight:700;">রেজিস্ট্রেশন</a></p>
+        </div>
+      `;
+      document.getElementById("login-form").onsubmit = async (e) => {
+        e.preventDefault();
+        try {
+          await signInWithEmailAndPassword(auth, document.getElementById("login-email").value, document.getElementById("login-password").value);
+          showToast("সাফল্যের সাথে লগইন হয়েছে!");
+          window.location.hash = "#/";
+        } catch (err) {
+          showToast("লগইন ব্যর্থ হয়েছে!");
+        }
+      };
+    }
+
+    function renderRegister() {
+      const viewport = document.getElementById("app-viewport");
+      viewport.innerHTML = `
+        <div class="checkout-viewport" style="max-width:400px; padding-top:30px;">
+          <h2 style="text-align:center; margin-bottom:20px;">নিবন্ধন করুন</h2>
+          <form id="reg-form">
+            <div style="margin-bottom:10px;"><input type="text" id="reg-name" required placeholder="নাম" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);"></div>
+            <div style="margin-bottom:10px;"><input type="tel" id="reg-phone" required placeholder="মোবাইল নাম্বার" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);"></div>
+            <div style="margin-bottom:10px;"><input type="email" id="reg-email" required placeholder="ইমেইল" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);"></div>
+            <!-- Address field on registration page -->
+            <div style="margin-bottom:10px;">
+              <textarea id="reg-address" required placeholder="আপনার সম্পূর্ণ ঠিকানা" rows="2" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary); font-size: 0.9rem; outline: none; resize: none;"></textarea>
+            </div>
+            <div style="margin-bottom:10px;"><input type="password" id="reg-password" required placeholder="পাসওয়ার্ড (কমপক্ষে ৬ ডিজিট)" style="width:100%; padding:11px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);"></div>
+            <button type="submit" class="btn btn-primary">রেজিস্ট্রেশন</button>
+          </form>
+          <p style="text-align:center; margin-top:15px; font-size:0.85rem;">ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="#/login" style="color:var(--accent-color); font-weight:700;">লগইন</a></p>
+        </div>
+      `;
+      document.getElementById("reg-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("reg-name").value;
+        const phone = document.getElementById("reg-phone").value;
+        const email = document.getElementById("reg-email").value;
+        const address = document.getElementById("reg-address").value;
+        try {
+          const creds = await createUserWithEmailAndPassword(auth, email, document.getElementById("reg-password").value);
+          await updateProfile(creds.user, { displayName: name });
+          await setDoc(doc(db, "users", creds.user.uid), { name, phone, email, address });
+          showToast("রেজিস্ট্রেশন সফল হয়েছে!");
+          window.location.hash = "#/";
+        } catch (err) {
+          showToast("রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
+        }
+      };
+    }
+
+    function renderTrack() {
+      document.getElementById("app-viewport").innerHTML = `
+        <div class="cart-viewport" style="max-width:500px;">
+          <h2 style="text-align:center;">অর্ডার ট্র্যাক করুন</h2>
+          <form id="track-form" style="display:flex; gap:10px; margin:20px 0;">
+            <input type="text" id="track-id" required placeholder="অর্ডার রেফারেন্স আইডি দিন" style="flex-grow:1; padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);">
+            <button type="submit" class="btn btn-primary" style="width:100px;">ট্র্যাক</button>
+          </form>
+          <div id="track-result"></div>
+        </div>
+      `;
+      document.getElementById("track-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const resultDiv = document.getElementById("track-result");
+        resultDiv.innerHTML = "খোঁজা হচ্ছে...";
+        try {
+          const ordSnap = await getDoc(doc(db, "orders", document.getElementById("track-id").value.trim()));
+          if(ordSnap.exists()) {
+            const data = ordSnap.data();
+            let trackingStatusMarkup = '';
+            
+            const statusBadge = getStatusBadge(data.status);
+
+            if (data.trackingCode) {
+              trackingStatusMarkup = `
+                <div style="background:rgba(16,185,129,0.1); border:1px solid var(--accent-color); padding:15px; border-radius:8px; margin-top:10px;">
+                  <p style="margin-bottom: 8px;"><strong>অবস্থা (Status):</strong> ${statusBadge}</p>
+                  <p><strong>আপনার ট্র্যাকিং কোড (Courier Code):</strong></p>
+                  <p style="font-size:1.2rem; font-weight:700; color:var(--accent-color); margin: 8px 0;">${data.trackingCode}</p>
+                  <p style="font-size:0.8rem; color:var(--text-secondary);">এই কোডটি ব্যবহার করে আপনি নির্ধারিত কুরিয়ারের অফিশিয়াল ওয়েবসাইট থেকে লাইভ পার্সেল ট্র্যাক করতে পারবেন।</p>
+                </div>
+              `;
+            } else {
+              trackingStatusMarkup = `
+                <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:15px; border-radius:8px; margin-top:10px;">
+                  <p><strong>অবস্থা (Status):</strong> ${statusBadge}</p>
+                  <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:5px;">এডমিন প্যানেল থেকে ট্র্যাকিং কোড আপডেট করার পর এখানে কোডটি দেখতে পাবেন।</p>
+                </div>
+              `;
+            }
+
+            resultDiv.innerHTML = `
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:15px; border-radius:8px;">
+                <p><strong>অর্ডার আইডি:</strong> ${ordSnap.id}</p>
+                <p><strong>মোট বিল:</strong> ৳${data.totalAmount}</p>
+                ${trackingStatusMarkup}
+              </div>
+            `;
+          } else {
+            resultDiv.innerHTML = "<div style='color:var(--danger-color); font-weight:600;'>অর্ডার পাওয়া যায়নি! অনুগ্রহ করে সঠিক আইডিটি দিন।</div>";
+          }
+        } catch(err) {
+          resultDiv.innerHTML = "<div style='color:var(--danger-color);'>অনুসন্ধান ব্যর্থ হয়েছে! অনুগ্রহ করে আবার চেষ্টা করুন।</div>";
+        }
+      };
+    }
+
+    async function renderProfile() {
+      if(!currentUserProfile) { window.location.hash = "#/login"; return; }
+      const viewport = document.getElementById("app-viewport");
+      
+      // Profile Photo Markup using App's logo dynamically
+      let profilePhotoMarkup = appSettings.logoUrl 
+        ? `<img src="${appSettings.logoUrl}" alt="Profile Logo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: contain; margin: 0 auto 15px auto; display: block; background: var(--bg-secondary); border: 2px solid var(--accent-color); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">`
+        : `<div style="width: 70px; height: 70px; background: var(--accent-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; font-size: 2rem; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">${(currentUserProfile.displayName || "G")[0].toUpperCase()}</div>`;
+
+      viewport.innerHTML = `
+        <div class="cart-viewport" style="max-width:600px;">
+          <!-- Beautified User Profile Details Card -->
+          <div style="background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(16, 185, 129, 0.05) 100%); border: 1px solid var(--border-color); padding: 30px 20px; border-radius: 16px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+            ${profilePhotoMarkup}
+            <h2 style="font-size: 1.4rem; margin-bottom: 5px; font-weight: 700;">প্রোফাইল ড্যাশবোর্ড</h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">SMG STORE BD-এর সম্মানিত গ্রাহক</p>
+            
+            <div style="text-align: left; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 8px;">
+              <p style="font-size: 0.9rem; margin: 0; display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);"><i class="fa-solid fa-user" style="width:20px;"></i> নাম:</span> <strong style="color: var(--text-primary);">${currentUserProfile.displayName || 'গ্রাহক'}</strong></p>
+              <p style="font-size: 0.9rem; margin: 0; display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);"><i class="fa-solid fa-envelope" style="width:20px;"></i> ইমেইল:</span> <strong style="color: var(--text-primary);">${currentUserProfile.email}</strong></p>
+              <p style="font-size: 0.9rem; margin: 0; display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);"><i class="fa-solid fa-phone" style="width:20px;"></i> মোবাইল:</span> <strong style="color: var(--text-primary);">${currentUserProfile.customData?.phone || 'যোগ করা হয়নি'}</strong></p>
+              <p style="font-size: 0.9rem; margin: 0; display: flex; flex-direction: column; gap: 4px;"><span style="color: var(--text-secondary);"><i class="fa-solid fa-location-dot" style="width:20px;"></i> ঠিকানা:</span> <strong style="color: var(--text-primary); background: var(--bg-primary); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500;">${currentUserProfile.customData?.address || 'যোগ করা হয়নি'}</strong></p>
+            </div>
+            
+            <button class="btn btn-outline" onclick="document.getElementById('profile-edit-section').style.display='block'; document.getElementById('profile-edit-section').scrollIntoView({behavior: 'smooth'});" style="margin-top:20px; font-size:0.85rem;"><i class="fa-solid fa-user-pen"></i> তথ্য পরিবর্তন করুন</button>
+          </div>
+
+          <!-- Edit Profile Form Section -->
+          <div id="profile-edit-section" style="display:none; background:var(--bg-secondary); border:1px solid var(--border-color); padding:20px; border-radius:12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--accent-color); font-weight: 700;"><i class="fa-solid fa-user-pen"></i> তথ্য পরিবর্তন করুন</h3>
+            <form id="profile-edit-form">
+              <div style="margin-bottom:12px;">
+                <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:5px;">আপনার নাম</label>
+                <input type="text" id="edit-profile-name" required style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);" value="${currentUserProfile.displayName || ''}">
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:5px;">মোবাইল নাম্বার</label>
+                <input type="tel" id="edit-profile-phone" required style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);" value="${currentUserProfile.customData?.phone || ''}">
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:5px;">ইমেইল ঠিকানা</label>
+                <input type="email" id="edit-profile-email" required style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary);" value="${currentUserProfile.email || ''}">
+              </div>
+              <div style="margin-bottom:15px;">
+                <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:5px;">সম্পূর্ণ ঠিকানা</label>
+                <textarea id="edit-profile-address" required rows="3" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-secondary); color:var(--text-primary); font-size:0.9rem;">${currentUserProfile.customData?.address || ''}</textarea>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" id="save-profile-btn" style="flex:1;">সংরক্ষণ করুন</button>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('profile-edit-section').style.display='none'" style="flex:1;">বাতিল</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Favorites Section -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:20px; border-radius:12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--accent-color); font-weight: 700;"><i class="fa-solid fa-heart"></i> আপনার পছন্দের তালিকা (Favorites)</h3>
+            <div id="profile-favorites-list">ফেভারিট লোড হচ্ছে...</div>
+          </div>
+
+          <!-- Dynamic Order History Block (Includes Product Image Previews) -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:20px; border-radius:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--accent-color); font-weight: 700;"><i class="fa-solid fa-clock-rotate-left"></i> আপনার অর্ডার হিস্টোরি</h3>
+            <div id="profile-orders-list">অর্ডার রেকর্ড লোড হচ্ছে...</div>
+          </div>
+        </div>
+      `;
+
+      // Render Favorites list from LocalStorage
+      renderFavoritesList();
+
+      // Hook up the Profile Update Edit Form Logic
+      const editForm = document.getElementById("profile-edit-form");
+      if (editForm) {
+        editForm.onsubmit = async (e) => {
+          e.preventDefault();
+          const saveBtn = document.getElementById("save-profile-btn");
+          saveBtn.disabled = true;
+          saveBtn.innerText = "সংরক্ষণ করা হচ্ছে...";
+
+          const newName = document.getElementById("edit-profile-name").value.trim();
+          const newPhone = document.getElementById("edit-profile-phone").value.trim();
+          const newEmail = document.getElementById("edit-profile-email").value.trim();
+          const newAddress = document.getElementById("edit-profile-address").value.trim();
+
+          try {
+            // Update Firebase Auth Display Name
+            if (auth.currentUser.displayName !== newName) {
+              await updateProfile(auth.currentUser, { displayName: newName });
+            }
+
+            // Update Auth Email if changed
+            let emailUpdated = true;
+            if (auth.currentUser.email !== newEmail) {
+              try {
+                await updateEmail(auth.currentUser, newEmail);
+              } catch (emailErr) {
+                emailUpdated = false;
+                console.warn("Email update failed (requires fresh authentication session):", emailErr);
+                showToast("নিরাপত্তাজনিত কারণে ইমেল পরিবর্তনের জন্য আপনাকে পুনরায় লগইন করতে হতে পারে। বাকি তথ্যগুলো সফলভাবে আপডেট হয়েছে।");
+              }
+            }
+
+            // Save in users collection
+            await setDoc(doc(db, "users", auth.currentUser.uid), {
+              name: newName,
+              phone: newPhone,
+              email: emailUpdated ? newEmail : auth.currentUser.email,
+              address: newAddress
+            }, { merge: true });
+
+            // Reload user snapshot
+            currentUserProfile = auth.currentUser;
+            const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+            if (userSnap.exists()) {
+              currentUserProfile.customData = userSnap.data();
+            }
+
+            showToast("প্রোফাইলের তথ্য সফলভাবে আপডেট করা হয়েছে!");
+            renderProfile();
+          } catch (err) {
+            console.error(err);
+            showToast("প্রোফাইল আপডেট ব্যর্থ হয়েছে! আবার চেষ্টা করুন।");
+          } finally {
+            if (saveBtn) {
+              saveBtn.disabled = false;
+              saveBtn.innerText = "সংরক্ষণ করুন";
+            }
+          }
+        };
+      }
+
+      // Fetch dynamic order history
+      try {
+        const q = query(collection(db, "orders"), where("userId", "==", currentUserProfile.uid));
+        const snap = await getDocs(q);
+        const listContainer = document.getElementById("profile-orders-list");
+        
+        if (snap.empty) {
+          listContainer.innerHTML = "<p style='text-align:center; color:var(--text-secondary); font-size: 0.9rem;'>আপনার কোনো অর্ডার রেকর্ড পাওয়া যায়নি।</p>";
+          return;
+        }
+
+        let orders = [];
+        snap.forEach(docSnap => {
+          orders.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Sort orders by timestamp safely
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        let ordersHtml = orders.map(ord => {
+          const statusBadge = getStatusBadge(ord.status);
+          const trackingInfo = ord.trackingCode ? `<p style="margin-top: 6px; font-size: 0.8rem; background: rgba(16,185,129,0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-color);"><strong>কুরিয়ার ট্র্যাকিং কোড:</strong> <span style="font-family: monospace; font-weight:700;">${ord.trackingCode}</span></p>` : '';
+          
+          let itemsPreview = "";
+          if (ord.items && ord.items.length > 0) {
+            itemsPreview = `
+              <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px; border-top:1px solid var(--border-color); padding-top:10px;">
+                ${ord.items.map(item => `
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${item.image || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; object-fit:contain; border-radius:4px; background:var(--bg-primary); border:1px solid var(--border-color);">
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                      <span style="font-size:0.8rem; font-weight:600;">${item.name} (${item.size})</span>
+                      <span style="font-size:0.75rem; color:var(--text-secondary);">${item.quantity} টি - ৳${item.price}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+
+          return `
+            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 0; font-size: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+                <span>অর্ডার আইডি: <span style="font-family: monospace;">${ord.id}</span></span>
+                ${statusBadge}
+              </div>
+              ${itemsPreview}
+              <p style="margin-top: 10px; font-weight:700;"><strong>মোট বিল:</strong> ৳${ord.totalAmount}</p>
+              ${trackingInfo}
+            </div>
+          `;
+        }).join('');
+
+        listContainer.innerHTML = ordersHtml;
+      } catch(err) {
+        console.error(err);
+        document.getElementById("profile-orders-list").innerHTML = "<p style='color:var(--danger-color); text-align:center;'>অর্ডার হিস্টোরি লোড করতে সাময়িক ত্রুটি হয়েছে।</p>";
+      }
+    }
+
+    function renderFavoritesList() {
+      const fontContainer = document.getElementById("profile-favorites-list");
+      if (!fontContainer) return;
+
+      const favorites = JSON.parse(localStorage.getItem('smg_favorites')) || [];
+      if (favorites.length === 0) {
+        fontContainer.innerHTML = "<p style='text-align:center; color:var(--text-secondary); font-size: 0.9rem; padding: 15px 0;'>কোনো জার্সি পছন্দের তালিকায় যোগ করা নেই।</p>";
+        return;
+      }
+
+      let favsHtml = `<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-top:10px;">`;
+      favorites.forEach(fav => {
+        favsHtml += `
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:12px; display:flex; flex-direction:column; align-items:center; position:relative; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.01);">
+            <button style="position:absolute; top:6px; right:6px; background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:1.1rem;" onclick="window.removeFavoriteFromProfile('${fav.id}')" title="বাদ দিন">
+              <i class="fa-solid fa-heart"></i>
+            </button>
+            <div style="width:75px; height:75px; background:var(--bg-secondary); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px; padding:4px;">
+              <img src="${fav.image}" style="max-width:100%; max-height:100%; object-fit:contain;">
+            </div>
+            <h5 style="font-size:0.78rem; font-weight:600; line-height:1.2; height:2.4em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:6px;">${fav.name}</h5>
+            <span style="font-size:0.85rem; font-weight:700; color:var(--accent-color); margin-bottom:10px;">৳${fav.price}</span>
+            <a href="#/product/${fav.id}" class="btn btn-primary" style="font-size:0.72rem; padding:5px 8px; border-radius:5px; width:100%;"><i class="fa-solid fa-circle-info"></i> বিস্তারিত</a>
+          </div>
+        `;
+      });
+      favsHtml += `</div>`;
+      fontContainer.innerHTML = favsHtml;
+    }
+
+    // Expose Functions Globally so dynamically injected HTML elements can reach them
+    window.renderProfile = renderProfile;
+    window.removeFavoriteFromProfile = (id) => {
+      let favorites = JSON.parse(localStorage.getItem('smg_favorites')) || [];
+      favorites = favorites.filter(item => item.id !== id);
+      localStorage.setItem('smg_favorites', JSON.stringify(favorites));
+      renderProfile();
+      showToast("পছন্দের তালিকা থেকে বাদ দেওয়া হয়েছে");
+    };
+  </script>
+</body>
+</html>
